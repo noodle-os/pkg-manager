@@ -5,19 +5,24 @@ INSTALLED_DB="/var/lib/noodle/installed.noodle"
 INSTALL_DIR="/bin/"
 LOG_FILE="/var/log/noodle.log"
 
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run this script as sudo."
+  exit 1
+fi
+
 init_noodle() {
   if [ ! -f "$INSTALLED_DB" ]; then
-    sudo mkdir -p "$(dirname "$INSTALLED_DB")"
-    sudo touch "$INSTALLED_DB"
+    mkdir -p "$(dirname "$INSTALLED_DB")"
+    touch "$INSTALLED_DB"
   fi
   if [ ! -f "$LOG_FILE" ]; then
-    sudo mkdir -p "$(dirname "$LOG_FILE")"
-    sudo touch "$LOG_FILE"
+    mkdir -p "$(dirname "$LOG_FILE")"
+    touch "$LOG_FILE"
   fi
 }
 
 log_message() {
-  echo "$(date): $1" | sudo tee -a "$LOG_FILE" > /dev/null
+  echo "$(date): $1" | tee -a "$LOG_FILE" > /dev/null
 }
 
 is_installed() {
@@ -75,7 +80,7 @@ install_package() {
   fi
 
   if [ -d "/tmp/$pkg_name" ] && [ -f "/tmp/$pkg_name/$pkg_name" ]; then
-      if ! sudo mv "/tmp/$pkg_name/$pkg_name" "$INSTALL_DIR"; then
+      if ! mv "/tmp/$pkg_name/$pkg_name" "$INSTALL_DIR"; then
           echo "Error: Failed to move files to $INSTALL_DIR."
           log_message "Error: Failed to move files to $INSTALL_DIR."
           rm -rf "/tmp/$pkg_name"
@@ -87,7 +92,7 @@ install_package() {
       exit 1
   fi
 
-  echo "$pkg_name|$ver" | sudo tee -a "$INSTALLED_DB" > /dev/null
+  echo "$pkg_name|$ver" | tee -a "$INSTALLED_DB" > /dev/null
   log_message "Package '$pkg_name' version $ver installed successfully."
 
   rm -f "$pkg_file"
@@ -105,13 +110,13 @@ remove_package() {
 
   echo "Removing package '$pkg_name'..."
   log_message "Removing package '$pkg_name'..."
-  if ! sudo rm -rf "$INSTALL_DIR/$pkg_name"; then
+  if ! rm -rf "$INSTALL_DIR/$pkg_name"; then
     echo "Error: Failed to remove package files."
     log_message "Error: Failed to remove package files."
     exit 1
   fi
 
-  sudo sed -i "/^$pkg_name|/d" "$INSTALLED_DB"
+  sed -i "/^$pkg_name|/d" "$INSTALLED_DB"
   log_message "Package '$pkg_name' removed successfully."
 
   echo "Package '$pkg_name' removed successfully."
