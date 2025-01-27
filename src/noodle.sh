@@ -34,7 +34,7 @@ install_package() {
 
   echo "Fetching package database..."
   log_message "Fetching package database..."
-  pkg_info=$(curl -s "$PKG_DB" | grep "^$pkg_name|")
+  pkg_info=$(wget -qO- "$PKG_DB" | grep "^$pkg_name|")
 
   if [ -z "$pkg_info" ]; then
     echo "Error: Package '$pkg_name' not found in the database."
@@ -137,7 +137,7 @@ list_installed() {
 info_package() {
   pkg_name=$1
 
-  pkg_info=$(curl -s "$PKG_DB" | grep "^$pkg_name|")
+  pkg_info=$(wget -qO- "$PKG_DB" | grep "^$pkg_name|")
 
   if [ -z "$pkg_info" ]; then
     echo "Error: Package '$pkg_name' not found in the database."
