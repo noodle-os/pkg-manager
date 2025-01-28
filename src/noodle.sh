@@ -34,7 +34,7 @@ install_package() {
 
   echo "Fetching package database..."
   log_message "Fetching package database..."
-  pkg_info=$(wget -qO- "$PKG_DB" | grep "^$pkg_name|")
+  pkg_info=$(wget -qO- --no-cache  "$PKG_DB" | grep "^$pkg_name|") 
 
   if [ -z "$pkg_info" ]; then
     echo "Error: Package '$pkg_name' not found in the database."
