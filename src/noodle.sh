@@ -158,10 +158,11 @@ display_help() {
   echo "Usage: noodle <command> [arguments]"
   echo ""
   echo "Commands:"
-  echo "  install <package>   Install a package"
-  echo "  remove <package>    Remove a package"
-  echo "  list                List all installed packages"
-  echo "  info <package>      Show information about a package"
+  echo "  install (-i) <package>   Install a package"
+  echo "  remove (-r) <package>    Remove a package"
+  echo "  info   (-f) <package>    Show information about a package"
+  echo "  list   (-l)              List all installed packages"
+  echo ""
   log_message "Displayed help information."
 }
 
@@ -176,18 +177,18 @@ command=$1
 pkg_name=$2
 
 case $command in
-  install)
+  install|-i)
     [ -z "$pkg_name" ] && { echo "Error: Missing package name."; log_message "Error: Missing package name."; exit 1; }
     install_package "$pkg_name"
     ;;
-  remove)
+  remove|-r)
     [ -z "$pkg_name" ] && { echo "Error: Missing package name."; log_message "Error: Missing package name."; exit 1; }
     remove_package "$pkg_name"
     ;;
-  list)
+  list|-l)
     list_installed
     ;;
-  info)
+  info|-f)
     [ -z "$pkg_name" ] && { echo "Error: Missing package name."; log_message "Error: Missing package name."; exit 1; }
     info_package "$pkg_name"
     ;;
