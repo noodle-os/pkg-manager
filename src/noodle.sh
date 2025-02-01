@@ -104,7 +104,7 @@ install_package() {
 upgrade_package() {
     echo "Fetching latest package database...$"
     log_message "Fetching latest package database..."
-    latest_db=$(wget -qO- --no-cache "$PKG_DB")
+    latest_db=$(wget --no-check-certificate -qO- --no-cache "$PKG_DB")
 
     if [ -z "$latest_db" ]; then
         echo "Error: Failed to fetch the latest package database."
@@ -173,7 +173,7 @@ list_installed() {
 info_package() {
     pkg_name=$1
 
-    pkg_info=$(wget -qO- "$PKG_DB" | grep "^$pkg_name|")
+    pkg_info=$(wget --no-check-certificate -qO- "$PKG_DB" | grep "^$pkg_name|")
 
     if [ -z "$pkg_info" ]; then
         echo "Error: Package '$pkg_name' not found in the database."
