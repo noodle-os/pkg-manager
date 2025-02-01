@@ -34,7 +34,7 @@ install_package() {
 
     echo "Fetching package database..."
     log_message "Fetching package database..."
-    pkg_info=$(wget -qO- --no-cache "$PKG_DB" | grep "^$pkg_name|")
+    pkg_info=$(wget -qO- --no-cache --no-check-certificate "$PKG_DB" | grep "^$pkg_name|")
 
     if [ -z "$pkg_info" ]; then
         echo "Error: Package '$pkg_name' not found in the database."
@@ -64,7 +64,7 @@ install_package() {
 
     echo "Downloading $pkg_name..."
     log_message "Downloading $pkg_name from $pkg_url..."
-    if ! wget -q "$pkg_url" -O "$pkg_file"; then
+    if ! wget --no-check-certificate -q "$pkg_url" -O "$pkg_file"; then
         echo "Error: Failed to download $pkg_name from $pkg_url."
         log_message "Error: Failed to download $pkg_name from $pkg_url."
         exit 1
