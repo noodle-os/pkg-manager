@@ -99,6 +99,41 @@ install_package() {
   echo "Package '$pkg_name' version $ver installed successfully."
 }
 
+upgrade_package() {
+  echo "Fetching latest package database...$"
+  log_message "Fetching latest package database..."
+  latest_db=$(wget -qO- --no-cache "$PKG_DB")
+
+  if [ -z "$latest_db" ]; then
+    echo "Error: Failed to fetch the latest package database."
+    log_message "Error: Failed to fetch the latest package database."
+    exit 1
+  fi
+
+  updated=0
+
+  while IFS="|" read -r pkg_name installed_ver; do
+    latest_pkg_info=$(echo "$latest_db" | grep "^$pkg_name|")
+    
+    if [ -n "$latest_pkg_info" ]; then
+      latest_ver=$(echo "$latest_pkg_info" | cut -d'|' -f2)
+
+      if [ "$installed_ver" != "$latest_ver" ]; then
+        echo "Upgrading '$pkg_name' from version $installed_ver to $latest_ver..."
+        log_message "Upgrading '$pkg_name' from version $installed_ver to $latest_ver..."
+        install_package "$pkg_name"
+        updated=1
+      fi
+    fi
+  done < "$INSTALLED_DB"
+
+  if [ "$updated" -eq 0 ]; then
+    echo "All packages are up to date."
+    log_message "All packages are up to date."
+  fi
+}
+
+
 remove_package() {
   pkg_name=$1
 
@@ -159,6 +194,7 @@ display_help() {
   echo ""
   echo "Commands:"
   echo "  install (-i) <package>   Install a package"
+  echo "  upgrade (-u) <package>   Upgrades a package"
   echo "  remove (-r) <package>    Remove a package"
   echo "  info   (-f) <package>    Show information about a package"
   echo "  list   (-l)              List all installed packages"
@@ -180,6 +216,10 @@ case $command in
   install|-i)
     [ -z "$pkg_name" ] && { echo "Error: Missing package name."; log_message "Error: Missing package name."; exit 1; }
     install_package "$pkg_name"
+    ;;
+  upgrade|-u)
+    [ -z "$pkg_name" ] && { echo "Error: Missing package name."; log_message "Error: Missing package name."; exit 1; }
+    upgrade_package "$pkg_name"
     ;;
   remove|-r)
     [ -z "$pkg_name" ] && { echo "Error: Missing package name."; log_message "Error: Missing package name."; exit 1; }
