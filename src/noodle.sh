@@ -92,6 +92,8 @@ install_package() {
       exit 1
   fi
 
+  sed -i "/^$pkg_name|/d" "$INSTALLED_DB"
+
   echo "$pkg_name|$ver" | tee -a "$INSTALLED_DB" > /dev/null
   log_message "Package '$pkg_name' version $ver installed successfully."
 
@@ -145,7 +147,7 @@ remove_package() {
 
   echo "Removing package '$pkg_name'..."
   log_message "Removing package '$pkg_name'..."
-  if ! rm -rf "$INSTALL_DIR/$pkg_name"; then
+  if ! rm -rf "${INSTALL_DIR:?}/$pkg_name"; then
     echo "Error: Failed to remove package files."
     log_message "Error: Failed to remove package files."
     exit 1
@@ -166,7 +168,7 @@ list_installed() {
 
   echo "Installed packages:"
   log_message "Listing installed packages..."
-  cat "$INSTALLED_DB" | awk -F'|' '{printf "- %s (version %s)\n", $1, $2}'
+  awk -F'|' '{printf "- %s (version %s)\n", $1, $2}' "$INSTALLED_DB"
 }
 
 info_package() {
