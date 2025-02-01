@@ -6,7 +6,7 @@ INSTALL_DIR="/bin/"
 LOG_FILE="/var/log/noodle.log"
 
 if [ "$(id -u)" -ne 0 ]; then
-  echo "Please run this script as sudo."
+  echo "Please run this script as root."
   exit 1
 fi
 
