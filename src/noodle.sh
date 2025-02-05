@@ -167,7 +167,7 @@ list_installed() {
 
     echo "Installed packages:"
     log_message "Listing installed packages..."
-    awk -F'|' '{printf "- %s (version %s)n", $1, $2}' "$INSTALLED_DB"
+    awk -F'|' '{printf "- %s (version %s)\n", $1, $2}' "$INSTALLED_DB"
 }
 
 info_package() {
@@ -183,10 +183,12 @@ info_package() {
 
     ver=$(echo "$pkg_info" | cut -d'|' -f2)
     url=$(echo "$pkg_info" | cut -d'|' -f3)
+    desc=$(echo "$pkg_info" | cut -d'|' -f4)
 
     echo "Package: $pkg_name"
     echo "Version: $ver"
     echo "URL: $url"
+    echo "Description: $desc"
     log_message "Displayed information for package '$pkg_name'."
 }
 
